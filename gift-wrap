@@ -1,0 +1,117 @@
+
+{% if cart.item_count > 0 %}
+
+
+      {% assign count = 0 %}
+
+      {% for item in cart.items %}
+      {% if item.product.id == 6195719831736 or item.product.id == 4435646971997 %} 
+      {% assign count = count | plus: item.quantity %}
+      {%endif%}
+      {% endfor %}
+
+
+ {% for item in cart.items %}
+
+ {% if item.product.id == 6195719831736 or item.product.id == 4435646971997 %}
+	
+ {% assign product = all_products['programme-de-massage'] %}
+
+{% unless cart.item_count == 0 or product.empty? or product.variants.first.available == false %}
+
+  {% assign variant_id = product.variants.first.id %}
+
+  <script>
+  (function($) {
+
+    var cartItems = {{ cart.items | json }},
+        qtyInTheCart = 0,
+        cartUpdates = {};
+
+    for (var i=0; i<cartItems.length; i++) {
+      if ( cartItems[i].id === {{ variant_id }} ) {
+        qtyInTheCart = cartItems[i].quantity;
+        break;
+      }
+    }
+
+    if ( ( cartItems.length === 1 ) && ( qtyInTheCart > 0 ) ) {
+      cartUpdates = { {{ variant_id }}: 0 }
+    }
+    else if ( ( cartItems.length >= 1 ) && ( qtyInTheCart !== {{count}} ) ) {
+      cartUpdates = { {{ variant_id }}: {{count}} }
+    }
+    else {
+      return;
+    }
+
+    var params = {
+      type: 'POST',
+      url: '/cart/update.js',
+      data: { updates: cartUpdates },
+      dataType: 'json',
+      success: function(stuff) { 
+        window.location.href = '/cart';
+      }
+    };
+
+    $.ajax(params);
+
+  })(jQuery);
+  </script>
+
+{% endunless %}
+
+
+
+
+{%else%}
+
+ 	
+ {% assign product = all_products['programme-de-massage'] %}
+
+{% unless cart.item_count == 0 or product.empty? or product.variants.first.available == false %}
+
+  {% assign variant_id = product.variants.first.id %}
+  <script>
+  (function($) {
+
+    var cartItems = {{ cart.items | json }},
+        qtyInTheCart = 0,
+        cartUpdates = {};
+
+    for (var i=0; i<cartItems.length; i++) {
+      if ( cartItems[i].id === {{ variant_id }} ) {
+        qtyInTheCart = cartItems[i].quantity;
+        break;
+      }
+    }
+	console.log(cartItems.length)
+    if ( ( cartItems.length === 1 ) && ( qtyInTheCart > 0 ) ) {
+      cartUpdates = { {{ variant_id }}: 0 }
+    }
+    else {
+      return;
+    }
+
+    var params = {
+      type: 'POST',
+      url: '/cart/update.js',
+      data: { updates: cartUpdates },
+      dataType: 'json',
+      success: function(stuff) { 
+        window.location.href = '/cart';
+      }
+    };
+
+    $.ajax(params);
+
+  })(jQuery);
+  </script>
+{% endunless %}
+
+
+
+ {% endif %}
+ {% endfor %}
+ {% endif %}
